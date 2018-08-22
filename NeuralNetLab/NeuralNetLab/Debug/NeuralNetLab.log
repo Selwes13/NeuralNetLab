@@ -1,0 +1,4 @@
+﻿  NeuralNetLab.cpp
+c:\users\samel\desktop\neuralnetlab\neuralnetlab\neuralnetlab.cpp(77): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
+c:\users\samel\desktop\neuralnetlab\neuralnetlab\neuralnetlab.cpp(87): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
+  NeuralNetLab.vcxproj -> C:\Users\samel\Desktop\NeuralNetLab\Debug\NeuralNetLab.exe
