@@ -197,6 +197,97 @@ void DataSet::loadOutputs(std::string filePath) {
 	}
 }
 
+
+void DataSet::loadDataSet(std::string filePath, int startLine, int numInputs, int * inputCols, int numOutputs, int * outputCols) {
+	std::ifstream inF;
+	inF.open(filePath);
+
+	if (inF.is_open()) {
+		std::cout << "loadOutputs -> Reading from '" << filePath << "'" << std::endl;
+		//checks if the number of examples has been recorded or not
+		if (numberOfExamples == -1)
+			numberOfExamples = getFileSize(filePath);//counts number of examples
+		int numberOfLines = numberOfExamples;
+
+		//adjusts the storage array to compensate with the start
+		numberOfExamples -= startLine;
+		
+		//finds the number of outputs if it's not already assigned
+		std::string lineStr;
+		inF >> lineStr;
+
+		numberOfInputs = numInputs;
+		numberOfOutputs = numOutputs;
+		std::cout << "loading data with " << numberOfInputs << " inputs and " << numberOfOutputs << " outputs" << std::endl;
+		
+
+		//creates the storage array
+		outputs = new double*[numberOfExamples];
+		inputs = new double*[numberOfExamples];
+		std::cout << "Reading " << numberOfExamples << " examples" << std::endl;
+
+		//keeps going through the list untill it runs out of items
+		int rowPtr = 0;
+		int linePtr = 0;
+		do {
+			//if the pointer is at or past the start line, begin processing
+			if (linePtr >= startLine) {
+				outputs[rowPtr] = new double[numberOfOutputs];
+				inputs[rowPtr] = new double[numberOfInputs];
+
+				std::stringstream line;
+				line.str(lineStr);
+				std::string item;
+
+				//for each item in the line
+				//finds the number of commas in the line, line has c + 1 items
+				size_t c = std::count(lineStr.begin(), lineStr.end(), ',');
+				//array to store each item in the line
+				double * lineArr = new double[c + 1];
+
+				//gets each item in the line and stores them in an array
+				int colPtr = 0;
+				while (std::getline(line, item, ',')) {
+					//converts item string to double
+					double x = strtof(item.substr(0).c_str(), 0);
+					//stores item
+					lineArr[colPtr] = x;
+					colPtr++;
+				}
+
+
+				//for each of the input columns
+				colPtr = 0;
+				for (; colPtr < numberOfInputs; colPtr++) {
+					//stores the relevant item from the line in the input array
+					inputs[rowPtr][colPtr] = lineArr[inputCols[colPtr]];
+				}
+
+				//for each of the output columns
+				colPtr = 0;
+				for (; colPtr < numberOfOutputs; colPtr++) {
+					//stores the relevant item from the line in the input array
+					outputs[rowPtr][colPtr] = lineArr[outputCols[colPtr]];
+				}
+
+				lineArr = NULL;
+				delete lineArr;
+
+				rowPtr++; 
+			}
+
+			linePtr++;
+			inF >> lineStr;
+			//checks if there is data to be stored
+
+		} while (linePtr < numberOfLines);
+
+	}
+	else {
+		std::cout << "Failed to open '" << filePath << "'" << std::endl;
+	}
+}
+
 void DataSet::splitData() {
 	//makes and array containing a 'pointer' to each entry of the data set
 	int * pointers = new int[numberOfExamples];
@@ -238,6 +329,10 @@ void DataSet::splitData() {
 	}
 
 	dataIsSplit = true;
+
+	//delete temporary array
+	pointers = NULL;
+	delete pointers;
 
 }
 

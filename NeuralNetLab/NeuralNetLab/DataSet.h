@@ -75,6 +75,6 @@ public:
 	void print_B();
 
 	//load full set
-	void loadDataSet(std::string filePath);
+	void loadDataSet(std::string filePath, int startLine, int numberOfInputs, int * inputCols, int numberOfOutputs, int * outputCols);
 
 };
